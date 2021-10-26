@@ -3,34 +3,42 @@ Variable descriptions,,
 ,Name,Description
 
 ACTIVE VARIABLES
-1,Year,1987-2008
-2,Month,12-Jan
-3,DayofMonth,31-Jan
+
 4,DayOfWeek,1 (Monday) - 7 (Sunday)
-5,DepTime,"actual departure time (local, hhmm)"
 6,CRSDepTime,"scheduled departure time (local, hhmm)"
-
 8,CRSArrTime,"scheduled arrival time (local, hhmm)"
+9,UniqueCarrier,unique carrier code, identificador de comañia
+11,TailNum,plane tail number, identificador de avion
+13,CRSElapsedTime,in minutes, tiempo de vuelo planificado
 
-13,CRSElapsedTime,in minutes
-
-15,ArrDelay,"arrival delay, in minutes"
+15,ArrDelay,"arrival delay, in minutes", CLASE
 16,DepDelay,"departure delay, in minutes"
 17,Origin,origin IATA airport code
 18,Dest,destination IATA airport code
 19,Distance,in miles
 
-21,TaxiOut,taxi out time in minutes
+21,TaxiOut,taxi out time in minutes, tiempo desde que sale de la puerta hasta que despega
 22,Cancelled,was the flight cancelled?
-23,CancellationCode,"reason for cancellation (A = carrier, B = weather, C = NAS, D = security)"
+23,CancellationCode,"reason for cancellation (A = carrier, B = weather, C = NAS, D = security)"	
 
 
 TENTATIVE DELETED VARIABLES
-9,UniqueCarrier,unique carrier code
-10,FlightNum,flight number
-11,TailNum,plane tail number
+
+10,FlightNum,flight number, no aporta información relevante para la clasificación.
+
+
+5,DepTime,"actual departure time (local, hhmm)", por que ya tenemos la hora planificada y el retraso en minutos.
+
+TENTATIVE TO JOIN 
+----
+1,Year,1987-2008
+2,Month,12-Jan
+3,DayofMonth,31-Jan
+----
+
 
 DELETED VARIABLES
+
 
 
 14,AirTime,in minutes

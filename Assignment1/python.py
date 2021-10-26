@@ -3,6 +3,7 @@ import sys
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.regression import LinearRegression
 from pyspark.sql.types import IntegerType,BooleanType,DateType
+from pyspark.ml.feature import VectorSlicer
 
 
 csvlist =[]
@@ -25,10 +26,10 @@ else:
     for i in csvlist:
         count = 1
         if count == 1:
-            df = spark.read.csv(str(i),header = True)
+            df = spark.read.csv(str(i),header = True, inferSchema = True)
             print("Leido")
         else:
-            df2 = spark.read.csv(str(i),header = True)
+            df2 = spark.read.csv(str(i),header = True, inferSchema = True)
             df = union(df2)
         count += 1
 
@@ -45,10 +46,21 @@ print(len(df.columns))
 #TRATAMOS LOS TIPOS
 
 print("Changing tipe")
-df = df.withColumn("Month",df["Month"].cast(IntegerType()))
+#df = df.withColumn("Month",df["Month"].cast(IntegerType()))
+
+for field in df.schema.fields:
+    print(field.name +" , "+str(field.dataType))
+df.filter(df['ArrDelay'] > 100).show()
 
 
 """
+slicer = VectorSlicer(inputCol="userFeatures", outputCol="features", indices=[1])
+
+output = slicer.transform(df)
+
+output.select("userFeatures", "features").show()
+
+
 for field in df.schema.fields:
     print(field.name +" , "+str(field.dataType))
 """
