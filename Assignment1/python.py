@@ -52,6 +52,8 @@ for field in df.schema.fields:
     print(field.name +" , "+str(field.dataType))
 df.filter(df['ArrDelay'] > 100).show()
 
+df.head()
+
 
 """
 slicer = VectorSlicer(inputCol="userFeatures", outputCol="features", indices=[1])
