@@ -1,9 +1,11 @@
 from pyspark.sql import SparkSession
 import sys
+from pyspark.ml.linalg import Vectors
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.regression import LinearRegression
-from pyspark.sql.types import IntegerType,BooleanType,DateType
+from pyspark.sql.types import IntegerType,BooleanType,DateType,StringType
 from pyspark.ml.feature import VectorSlicer
+from pyspark.sql.functions import concat, col, lit
 
 
 csvlist =[]
@@ -33,47 +35,34 @@ else:
             df = union(df2)
         count += 1
 
-print(len(df.columns))
-print(df.count())
 
 #LISTA DE COLUMNAS INNECESARIAS
 colsToDelete = ("ArrTime","ActualElapsedTime","AirTime","TaxiIn","Diverted","CarrierDelay","WeatherDelay","NASDelay","SecurityDelay","LateAircraftDelay")
 
 #ELIMINAMOS COLUMNAS INNECESARIAS
 df = df.drop(*colsToDelete)
-print(len(df.columns))
 
+
+#JUNTAMOS COLUMNAS  YEAR MONTH DAY
+df = df.withColumn("Year",df["Year"].cast(StringType()))
+df = df.withColumn("Month",df["Month"].cast(StringType()))
+df = df.withColumn("DayofMonth",df["DayofMonth"].cast(StringType()))
+df = df.withColumn("Date", concat(col("DayofMonth"), lit("-"), col("Month"), lit("-"), col("Year")))
+
+print(df.head())
 #TRATAMOS LOS TIPOS
-
+#Hay que escalar los datos - Normalizar
+"""
 print("Changing tipe")
 #df = df.withColumn("Month",df["Month"].cast(IntegerType()))
 
+for column in df.columns:
+    df = df.withColumn(str(column),df[str(column)].cast(IntegerType()))
+"""
+arr = ""
 for field in df.schema.fields:
+    #df = df.withColumn(field.name,df[field.name].cast(IntegerType()))
     print(field.name +" , "+str(field.dataType))
-df.filter(df['ArrDelay'] > 100).show()
 
-df.head()
-
-
-"""
-slicer = VectorSlicer(inputCol="userFeatures", outputCol="features", indices=[1])
-
-output = slicer.transform(df)
-
-output.select("userFeatures", "features").show()
-
-
-for field in df.schema.fields:
-    print(field.name +" , "+str(field.dataType))
-"""
-"""
-vectorAssembler = VectorAssembler(inputCols = df.columns, outputCol = 'features')
-tdf = vectorAssembler.transform(df)
-splits = tdf.randomSplit([0.7, 0.3])
-train_df = splits[0]
-test_df = splits[1]
-lr = LinearRegression(featuresCol = 'features', labelCol='ArrDelay', maxIter=10, regParam=0.3, elasticNetParam=0.8)
-lr_model = lr.fit(train_df)
-print("Coefficients: " + str(lr_model.coefficients))
-print("Intercept: " + str(lr_model.intercept))
-"""
+    arr = arr+ " " + field.name
+arr = arr.split()
